@@ -9,7 +9,19 @@
         }
     }
     array_shift($today_schedule);
- ?>
+
+$schedule_count = count($today_schedule);
+
+$output_schedules =[];
+for ($i = 1; $i <= $schedule_count; $i += 2){
+    $time = $today_schedule[$i - 1];
+    $action = $today_schedule[$i];
+
+    $output_schedules[$time] = $action;
+}
+
+//var_dump($output_schedules);
+?>
 
 <!DOCTYPE html>
 <html lang="ja">
@@ -26,8 +38,11 @@
     </header>
     <main>
         <h2 class="today"><?php echo $day; ?></h2>
-        <?php foreach($today_schedule as $schedule): ?>
-        <p><?php echo $schedule ?></p>
+        <?php foreach($output_schedules as $time => $schedule): ?>
+        <div class="one_schedule">
+            <h3><?php echo $time; ?></h3>
+            <p><?php echo $schedule; ?></p>
+        </div>
         <?php endforeach ?>
     </main>
     <footer>
