@@ -1,3 +1,7 @@
+input[type="submit"]{
+    -webkit-appearance: none;
+}
+
 *{
     margin: 0;
 }
@@ -8,6 +12,15 @@ header{
 
 header h1{
     margin-left: 10px;
+}
+
+header p{
+    text-align: right;
+    padding-right: 10px;
+}
+
+nav{
+    background-color: #fda7a7;
 }
 
 main{
@@ -33,9 +46,71 @@ main{
     text-align: center;
 }
 
+.login{
+    display: block;
+    text-align: center;
+    padding: 30px 0 20px 0;
+}
+
+.user_name{
+    position: relative;
+    width: 35%;
+    font: 15px/24px sans-serif;
+	box-sizing: border-box;
+	padding: 0.3em;
+	transition: 0.3s;
+	letter-spacing: 1px;
+	color: #000;
+	border: 1px solid #1b2538;
+	border-radius: 4px;
+}
+
+.user_pass{
+    position: relative;
+    width: 35%;
+    font: 15px/24px sans-serif;
+	box-sizing: border-box;
+	padding: 0.3em;
+	transition: 0.3s;
+	letter-spacing: 1px;
+	color: #000;
+	border: 1px solid #1b2538;
+	border-radius: 4px;
+}
+
+.log_new{
+    padding: 15px 40px;
+    font-size: 1.2em;
+    background-color: #000;
+    color: #fff;
+    transition: 0.3s;
+    border-radius: 4px;
+    border-style: none;
+}
+
+.new_user_info{
+    padding: 20px 0;
+}
+
+.new_name{
+    display: inline-block;
+    position: relative;
+    width: 50%;
+}
+
+.new_pass{
+    display: inline-block;
+    position: relative;
+    width: 50%;
+}
+
+.login .form_textbox{
+    padding: 30px 0;
+}
+
 footer{
     background-color: #e48a35b6;
-    font-size: 6px;
+    font-size: 8px;
     text-align: center;
     padding: 15px 0;  
 }
