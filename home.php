@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+echo $_SESSION['login_name'];
+
 if (!empty($_POST['log_out'])) {
     unset($_SESSION['login_name']);
 
@@ -31,7 +33,7 @@ if(!empty($_POST['new'])) {
     $pass_data = fopen("./user_data/user_pass.txt", 'r');
     $count = 1;
     while($user_info = fgets($pass_data)){
-        $count++; 
+        $count++;
     }
     $new_user_pass_data = $count . '/' . $_SESSION['name'] . '/' . $_SESSION['pass'] . '/';
     fclose($pass_data);
@@ -43,7 +45,7 @@ if(!empty($_POST['new'])) {
 
 $day = date(Y) . '年' . date(n) . '月' . date(j) . '日';
 
-if ($login === 'Yes') {
+if ($login === 'Yes' || !empty($_SESSION['login_name'])) {
     $today = date(Y).date(n).date(j);
     $datas = fopen("./user_data/schedule_data.txt", 'r');
     while($schedule_data = fgets($datas)){
@@ -57,7 +59,7 @@ if ($login === 'Yes') {
             }
         }
     }
-    $_SESSION['login_name'] = $user_info[1];
+    $_SESSION['login_name'] = $user_info;
 
     if($today_schedule){
         array_shift($today_schedule);
@@ -74,6 +76,10 @@ if ($login === 'Yes') {
     }
 }
 
+if (!empty($_POST['make'])) {
+
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -88,19 +94,20 @@ if ($login === 'Yes') {
 <body>
     <form action="home.php" method="post">  
         <header>
-            <h1>Web My Schedule</h1>
+            <h1>Web Schedule</h1>
             <?php if(!empty($_SESSION['login_name'])): ?>
-            <p><?php echo $_SESSION['login_name'] ?>さん</p>
+                <p><?php echo $_SESSION['login_name'][1] ?>さん</p>
             <?php endif ?>
         </header>
         <nav>
             <?php if ($login === 'Yes'): ?>
-            <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                <input type="submit" class="make" name="make" value="スケジュール作成">
+                <input type="submit" class="log_out" name="log_out" value="ログアウト">
             <?php endif ?>
         </nav>
         <main>
             <h2 class="today">● <?php echo $day; ?> ●</h2>
-            <?php if ($login === 'Yes'): ?>
+            <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
                 <?php foreach($output_schedules as $time => $schedule): ?>
                     <div class="one_schedule">
                         <h3><?php echo $time; ?></h3>
@@ -125,6 +132,9 @@ if ($login === 'Yes') {
                     </div>
                     <input type="submit" class="log_new" name="new" value="新規登録">
                 </div>
+            <?php endif ?>
+            <?php if (!empty($_POST['make'])): ?>
+
             <?php endif ?>
         </main>
         <footer>
