@@ -1,11 +1,8 @@
 <?php
 session_start();
 
-echo $_SESSION['login_name'];
-
 if (!empty($_POST['log_out'])) {
     unset($_SESSION['login_name']);
-
 }
 
 
@@ -20,8 +17,12 @@ if (!empty($_POST['user_pass']) && !empty($_POST['user_name'])){
     $pass_data = fopen("./user_data/user_pass.txt", 'r');
     while($user_info = fgets($pass_data)){
         $user_info = explode("/", $user_info);
+        
+        $user_info[2] = trim($user_info[2]);
+
         if ($_POST['user_name'] === $user_info[1] && $_POST['user_pass'] === $user_info[2]) {
             $login = 'Yes';
+            $_SESSION['login_name'] = $user_info;
             break;
         }
     }
@@ -32,10 +33,10 @@ if (!empty($_POST['user_pass']) && !empty($_POST['user_name'])){
 if(!empty($_POST['new'])) {
     $pass_data = fopen("./user_data/user_pass.txt", 'r');
     $count = 1;
-    while($user_info = fgets($pass_data)){
+    while($user_count = fgets($pass_data)){
         $count++;
     }
-    $new_user_pass_data = $count . '/' . $_SESSION['name'] . '/' . $_SESSION['pass'] . '/';
+    $new_user_pass_data = $count . '/' . $_SESSION['name'] . '/' . $_SESSION['pass'];
     fclose($pass_data);
 
     $pass_data = fopen("./user_data/user_pass.txt", 'a');
@@ -43,9 +44,13 @@ if(!empty($_POST['new'])) {
 }
 
 
+if (!empty($_SESSION['login_name'])) {
+    $user_info = $_SESSION['login_name'];
+}
+
 $day = date(Y) . '年' . date(n) . '月' . date(j) . '日';
 
-if ($login === 'Yes' || !empty($_SESSION['login_name'])) {
+if ($login === 'Yes') {
     $today = date(Y).date(n).date(j);
     $datas = fopen("./user_data/schedule_data.txt", 'r');
     while($schedule_data = fgets($datas)){
@@ -59,7 +64,7 @@ if ($login === 'Yes' || !empty($_SESSION['login_name'])) {
             }
         }
     }
-    $_SESSION['login_name'] = $user_info;
+    
 
     if($today_schedule){
         array_shift($today_schedule);
@@ -140,6 +145,7 @@ if (!empty($_POST['make'])) {
         <footer>
             <p>Webスケジュール管理ページ</p>
         </footer>
+        <input type="submit" class="kousin" name="kousin" value="更新">
     </form>
 </body>
 </html>
