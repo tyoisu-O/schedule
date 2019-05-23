@@ -29,7 +29,7 @@ header p{
 
 nav{
     background-color: #ebbaae;
-    height: 20px;
+    height: 23px;
     display: flex;
     position: relative;
 }
@@ -37,7 +37,7 @@ nav{
 .make{
     position: absolute;
     left: 0;
-    height: 20px;
+    height: 23px;
     width: 130px;
     color: #ffffff;
     background: #000000;
@@ -47,7 +47,7 @@ nav{
 .log_out{
     position: absolute;
     right: 0;
-    height: 20px;
+    height: 23px;
     width: 95px;
     color: #ffffff;
     background: #000000;
@@ -65,12 +65,72 @@ main{
     padding-bottom: 5px;
 }
 
-.one_schedule{
+.first{
     padding-left: 5px;
+}
+
+.end{
+    text-align: right;
+    padding-right: 5px;
 }
 
 .one_schedule p{
     text-align: center;
+}
+
+.No_Schedule{
+    text-align: center;
+    margin: 60px 0;
+}
+
+.No_Schedule input{
+    width: 35%;
+    font: 15px/24px sans-serif;
+	box-sizing: border-box;
+	padding: 20px 5px;
+	transition: 0.3s;
+    letter-spacing: 1px;
+    background-color: #000;
+    color: rgb(255, 255, 255);
+    margin-top: 20px;
+}
+
+.sche_make{
+    margin: 60px 0;
+}
+
+.sche_name {
+    display: block;
+    text-align: center;
+    width: 70%;
+    margin-left: 15%;
+    font: 15px/24px sans-serif;
+	box-sizing: border-box;
+	padding: 0.3em;
+	transition: 0.3s;
+	letter-spacing: 1px;
+	color: #000;
+	border: 1px solid #1b2538;
+	border-radius: 4px;
+}
+
+.decision{
+    display: block;
+    font: 15px/24px sans-serif;
+    text-align: center;
+    width: 30%;
+    margin-left: 35%;
+	box-sizing: border-box;
+	padding: 20px 40px;
+	transition: 0.3s;
+    letter-spacing: 1px;
+    background-color: #000;
+    color: rgb(255, 255, 255);
+    margin-top: 20px;
+}
+
+.time_set{
+    display: inline;
 }
 
 .today{
