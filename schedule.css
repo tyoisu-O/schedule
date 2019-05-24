@@ -114,14 +114,17 @@ main{
 	border-radius: 4px;
 }
 
-.decision{
-    display: block;
+.sche_btns{
+    text-align: center;
+}
+
+.decision {
+    display: inline-block;
     font: 15px/24px sans-serif;
     text-align: center;
     width: 30%;
-    margin-left: 35%;
 	box-sizing: border-box;
-	padding: 20px 40px;
+	padding: 20px 5px;
 	transition: 0.3s;
     letter-spacing: 1px;
     background-color: #000;
@@ -129,8 +132,32 @@ main{
     margin-top: 20px;
 }
 
+.add_sche{
+    display: inline-block;
+    font: 15px/24px sans-serif;
+    text-align: center;
+    width: 30%;
+	box-sizing: border-box;
+	padding: 20px 5px;
+	transition: 0.3s;
+    letter-spacing: 1px;
+    background-color: #000;
+    color: rgb(255, 255, 255);
+    margin-top: 20px; 
+}
+
 .time_set{
-    display: inline;
+    text-align: center;
+    
+}
+
+.time_set input{
+    width: 30px;
+    display: inline-block;
+}
+
+.time_set p{
+    display: inline-block;
 }
 
 .today{
