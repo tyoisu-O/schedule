@@ -5,6 +5,13 @@ input[type="submit"]{
 
 *{
     margin: 0;
+    /* background-color: #f8e8d3; */
+}
+
+.wrapper{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header{
@@ -13,10 +20,11 @@ header{
     position: relative;
 }
 
-header h1{
-    margin-left: 10px;
+header input{
     display: inline;
-
+    font-size: 38px;
+    background-color: #fda7a7;
+    border: none;
 }
 
 header p{
@@ -57,6 +65,7 @@ nav{
 main{
     padding: 20px 10px;
     background-color: #f8e8d3;
+    flex: 1;
 }
 
 .one_schedule{
@@ -122,7 +131,7 @@ main{
     display: inline-block;
     font: 15px/24px sans-serif;
     text-align: center;
-    width: 30%;
+    width: 45%;
 	box-sizing: border-box;
 	padding: 20px 5px;
 	transition: 0.3s;
@@ -136,7 +145,7 @@ main{
     display: inline-block;
     font: 15px/24px sans-serif;
     text-align: center;
-    width: 30%;
+    width: 45%;
 	box-sizing: border-box;
 	padding: 20px 5px;
 	transition: 0.3s;
@@ -227,8 +236,11 @@ main{
 }
 
 footer{
+    display: inline;
     background-color: #e48a35b6;
     font-size: 8px;
     text-align: center;
-    padding: 15px 0;  
+    padding: 15px 0; 
+    
+    margin-top: auto;
 }

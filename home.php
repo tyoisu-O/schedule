@@ -42,7 +42,12 @@ if(!empty($_POST['new'])) {
 
     $pass_data = fopen("./user_data/user_pass.txt", 'a');
     fwrite($pass_data, "\n" . $new_user_pass_data);
-    $_SESSION['login_name'] = [$count, $_SESSION['name'], $_SESSION['pass']];
+    $session_user_info = [];
+    $session_user_info[] = strval($count);
+    $session_user_info[] = $_SESSION['name'];
+    $session_user_info[] = $_SESSION['pass'];
+
+    $_SESSION['login_name'] = $session_user_info;
     $login = 'Yes';
 }
 
@@ -132,11 +137,12 @@ if ($login === 'Yes') {
     while($schedule_data = fgets($datas)){
         $users_data = explode(" ",$schedule_data);
         $user_num = $users_data[0];
-        $schedule_data = explode("/", $users_data[1]);
+        $schedule_datas = explode("/", $users_data[1]);
         //erorr : 新規でのログイン時,スケジュールが存在しても表示できない
+        //解決 : 型が違った
         if ($user_num === $user_info[0]) {
-            if ($today === $schedule_data[0]) {
-                $today_schedule = $schedule_data;
+            if ($today === $schedule_datas[0]) {
+                $today_schedule = $schedule_datas;
                 break;
             }
         }
@@ -185,80 +191,81 @@ if (!empty($_POST['add_sche'])) {
     <title>Schedule</title>
 </head>
 <body>
-    <form action="home.php" method="post">  
-        <header>
-            <h1>Web Schedule</h1>
-            <?php if(!empty($_SESSION['login_name'])): ?>
-                <p><?php echo $_SESSION['login_name'][1] ?>さん</p>
-            <?php endif ?>
-        </header>
-        <nav>
-            <?php if ($login === 'Yes' ||  $login === 'make'): ?>
-                <input type="submit" class="make" name="make" value="スケジュール作成">
-                <input type="submit" class="log_out" name="log_out" value="ログアウト">
-            <?php endif ?>
-        </nav>
-        <main>
-            <h2 class="today">● <?php echo $day; ?> ●</h2>
-            <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
-                <?php foreach($output_schedules as $one_schedule): ?>
-                    <div class="one_schedule">
-                        <h3 class="first"><?php echo $one_schedule[0]; ?> 〜</h3>
-                        <p><?php echo $one_schedule[1]; ?></p>
-                        <h3 class="end">〜 <?php echo $one_schedule[2]; ?></h3>
+    <form action="home.php" method="post"> 
+        <div class="wrapper">
+            <header>
+                <input type="submit" value="Web Schedule">
+                <?php if(!empty($_SESSION['login_name'])): ?>
+                    <p><?php echo $_SESSION['login_name'][1] ?>さん</p>
+                <?php endif ?>
+            </header>
+            <nav>
+                <?php if ($login === 'Yes' ||  $login === 'make'): ?>
+                    <input type="submit" class="make" name="make" value="スケジュール作成">
+                    <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                <?php endif ?>
+            </nav>
+            <main>
+                <h2 class="today">● <?php echo $day; ?> ●</h2>
+                <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
+                    <?php foreach($output_schedules as $one_schedule): ?>
+                        <div class="one_schedule">
+                            <h3 class="first"><?php echo $one_schedule[0]; ?> 〜</h3>
+                            <p><?php echo $one_schedule[1]; ?></p>
+                            <h3 class="end">〜 <?php echo $one_schedule[2]; ?></h3>
+                        </div>
+                    <?php endforeach ?>
+                    <?php if($output === 'No Schedule'): ?>
+                        <div class="No_Schedule">
+                            <h3>スケジュールが設定されていません</h3>
+                            <input type="submit" class="make2" name="make" value="スケジュール作成">
+                        </div>
+                    <?php endif ?>
+                <?php elseif($login === 'make'): ?>
+                    <div class="sche_make">
+                        <input type="text" class="sche_name" name="sche_name" placeholder="スケジュールの名前">
+                        <div class="time_set">
+                            <input type="text" class="start_hour" name="start_hour" placeholder="時">
+                            <p>:</p>
+                            <input type="text" class="start_minute" name="start_minute" placeholder="分">
+                            <p>　〜　</p>
+                            <input type="text" class="end_hour" name="end_hour" placeholder="時">
+                            <p>:</p>
+                            <input type="text" class="end_minute" name="end_minute" placeholder="分">
+                        </div>
+                        <div class="sche_btns">
+                            <input type="submit" class="add_sche" name="add_sche" value="次のスケジュール">
+                            <input type="submit" class="decision" name="decision" value="確定">
+                        </div>
+                        
                     </div>
-                <?php endforeach ?>
-                <?php if($output === 'No Schedule'): ?>
-                    <div class="No_Schedule">
-                        <h3>スケジュールが設定されていません</h3>
-                        <input type="submit" class="make2" name="make" value="スケジュール作成">
+                <?php elseif($login === 'No'): ?>
+                    <div class="login">
+                        <h3>ログイン&新規登録</h3>
+                        <div class="form_textbox">
+                            <input type="text" class="user_name" name="user_name" placeholder="ニックネーム">
+                            <input type="text" class="user_pass" name="user_pass" placeholder="パスワード">
+                        </div>
+                        <input type="submit" class="log_new" name="log" value="I N">
+                    </div>
+                <?php elseif($login === 'New'): ?>
+                    <div class="login">
+                        <h3>ログイン&新規登録</h3>
+                        <div class="new_user_info">
+                            <h4 class="new_name">ニックネーム:<?php echo $_SESSION['name'] ?></h4>
+                            <h4 class="new_pass">パスワード:<?php echo $_SESSION['pass'] ?></h4>
+                        </div>
+                        <input type="submit" class="log_new" name="new" value="新規登録">
                     </div>
                 <?php endif ?>
-            <?php elseif($login === 'make'): ?>
-                <div class="sche_make">
-                    <input type="text" class="sche_name" name="sche_name" placeholder="スケジュールの名前">
-                    <div class="time_set">
-                        <input type="text" class="start_hour" name="start_hour" placeholder="時">
-                        <p>:</p>
-                        <input type="text" class="start_minute" name="start_minute" placeholder="分">
-                        <p>　〜　</p>
-                        <input type="text" class="end_hour" name="end_hour" placeholder="時">
-                        <p>:</p>
-                        <input type="text" class="end_minute" name="end_minute" placeholder="分">
-                    </div>
-                    <div class="sche_btns">
-                        <input type="submit" class="add_sche" name="add_sche" value="次のスケジュール">
-                        <input type="submit" class="decision" name="decision" value="確定">
-                    </div>
-                    
-                </div>
-            <?php elseif($login === 'No'): ?>
-                <div class="login">
-                    <h3>ログイン&新規登録</h3>
-                    <div class="form_textbox">
-                        <input type="text" class="user_name" name="user_name" placeholder="ニックネーム">
-                        <input type="text" class="user_pass" name="user_pass" placeholder="パスワード">
-                    </div>
-                    <input type="submit" class="log_new" name="log" value="I N">
-                </div>
-            <?php elseif($login === 'New'): ?>
-                <div class="login">
-                    <h3>ログイン&新規登録</h3>
-                    <div class="new_user_info">
-                        <h4 class="new_name">ニックネーム:<?php echo $_SESSION['name'] ?></h4>
-                        <h4 class="new_pass">パスワード:<?php echo $_SESSION['pass'] ?></h4>
-                    </div>
-                    <input type="submit" class="log_new" name="new" value="新規登録">
-                </div>
-            <?php endif ?>
-            <?php if (!empty($_POST['make'])): ?>
+                <?php if (!empty($_POST['make'])): ?>
 
-            <?php endif ?>
-        </main>
-        <footer>
-            <p>Webスケジュール管理ページ</p>
-        </footer>
-        <input type="submit" class="kousin" name="kousin" value="更新">
+                <?php endif ?>
+            </main>
+            <footer>
+                <p>Webスケジュール管理ページ</p>
+            </footer>
+        </div> 
     </form>
 </body>
 </html>
