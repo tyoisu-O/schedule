@@ -106,13 +106,13 @@ if (!empty($_POST['decision'])) {
                         $_schedule_end_time = $_day_schedule[3];
 
                         if ($today === $_schedule_day) {
-                            //スケジュールの追加(1回目以降)
+                            //スケジュールの追加
                             fwrite($overwrite_data, $schedule . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
                             $add = true;
                         }
                     }
                     if (!$add) {
-                        //スケジュールの追加(1回目)
+                        //スケジュールの再記入
                         fwrite($overwrite_data, $schedule);
                     }
                     $add = false;
