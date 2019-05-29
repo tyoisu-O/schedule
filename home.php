@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-if (!empty($_POST['log_out'])) {
+if (!empty($_POST['log_out'])) { 
     unset($_SESSION['login_name']);
 }
 
@@ -61,7 +61,9 @@ $day = date(Y) . '年' . date(n) . '月' . date(j) . '日';
 $today = date(Y).date(m).date(d);
 
 
-if (!empty($_POST['decision'])) {
+
+//erorr : スケジュールの途中で改行されてしまう
+if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
     $add = false;
     $new = true;
 
@@ -71,7 +73,7 @@ if (!empty($_POST['decision'])) {
 
     $user_sche_data = fopen("./user_data/schedule_data.txt", 'r');
     while ($one_schedule = fgets($user_sche_data)) {
-        $user_schedule = explode(' ', $one_schedule);
+        $user_schedule = explode('$', $one_schedule);
         $user_number = $user_schedule[0];
         $user_day_schedule = $user_schedule[1];
 
@@ -90,30 +92,37 @@ if (!empty($_POST['decision'])) {
                 $schedules = [];
                 while ($schedules[] = fgets($overwrite_data)) {
                 }
+                // var_dump($schedules);
                 fclose($overwrite_data);
 
                 $overwrite_data = fopen("./user_data/schedule_data.txt", 'w');
                 foreach ($schedules as $schedule) {
-                    $_user_schedule = explode(' ', $schedule);
+                    $_user_schedule = explode('$', $schedule);
                     $_user_number = $_user_schedule[0];
                     $_user_day_schedule = $_user_schedule[1];
 
                     if ($_SESSION['login_name'][0] === $_user_number) {
+                        //ここでは？
                         $_day_schedule = explode('/', $_user_day_schedule);
                         $_schedule_day = $_day_schedule[0];
-                        $_schedule_start_time = $_day_schedule[1];
-                        $_schedule_name = $_day_schedule[2];
-                        $_schedule_end_time = $_day_schedule[3];
+                        // $_schedule_start_time = $_day_schedule[1];
+                        // $_schedule_name = $_day_schedule[2];
+                        // $_schedule_end_time = $_day_schedule[3];
 
                         if ($today === $_schedule_day) {
                             //スケジュールの追加
-                            fwrite($overwrite_data, $schedule . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
+                            $schedule = rtrim($schedule);
+                            // echo '追加';
+                            fwrite($overwrite_data, $schedule . '/' . $start_time . '/' . $sche_name . '/' . $end_time . "\n");
                             $add = true;
                         }
                     }
                     if (!$add) {
                         //スケジュールの再記入
-                        fwrite($overwrite_data, $schedule);
+                        if ($schedule) { //このif文でなぜかできてしまうbool(false)を書かない
+                            fwrite($overwrite_data, $schedule);
+                            // echo 'そのまま';
+                        } 
                     }
                     $add = false;
                 }
@@ -126,8 +135,12 @@ if (!empty($_POST['decision'])) {
         fclose($user_sche_data);
 
         $add_schedule = fopen("./user_data/schedule_data.txt", 'a');
-        fwrite($add_schedule, "\n" . $_SESSION["login_name"][0] . ' ' . $today . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
+        fwrite($add_schedule, "\n" . $_SESSION["login_name"][0] . '$' . $today . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
         fclose($add_schedule);
+        // echo '新たに';
+    }
+    if (!empty($_POST['add_sche'])) {
+        $login = 'make';
     }
 }
 
@@ -135,7 +148,7 @@ if (!empty($_POST['decision'])) {
 if ($login === 'Yes') {
     $datas = fopen("./user_data/schedule_data.txt", 'r');
     while($schedule_data = fgets($datas)){
-        $users_data = explode(" ",$schedule_data);
+        $users_data = explode("$",$schedule_data);
         $user_num = $users_data[0];
         $schedule_datas = explode("/", $users_data[1]);
         //erorr : 新規でのログイン時,スケジュールが存在しても表示できない
@@ -170,10 +183,6 @@ if ($login === 'Yes') {
 }
 
 if (!empty($_POST['make'])) {
-    $login  =  'make';
-}
-
-if (!empty($_POST['add_sche'])) {
     $login  =  'make';
 }
 
