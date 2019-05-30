@@ -102,17 +102,12 @@ if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
                     $_user_day_schedule = $_user_schedule[1];
 
                     if ($_SESSION['login_name'][0] === $_user_number) {
-                        //ここでは？
                         $_day_schedule = explode('/', $_user_day_schedule);
                         $_schedule_day = $_day_schedule[0];
-                        // $_schedule_start_time = $_day_schedule[1];
-                        // $_schedule_name = $_day_schedule[2];
-                        // $_schedule_end_time = $_day_schedule[3];
 
                         if ($today === $_schedule_day) {
                             //スケジュールの追加
                             $schedule = rtrim($schedule);
-                            // echo '追加';
                             fwrite($overwrite_data, $schedule . '/' . $start_time . '/' . $sche_name . '/' . $end_time . "\n");
                             $add = true;
                         }
@@ -121,7 +116,6 @@ if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
                         //スケジュールの再記入
                         if ($schedule) { //このif文でなぜかできてしまうbool(false)を書かない
                             fwrite($overwrite_data, $schedule);
-                            // echo 'そのまま';
                         } 
                     }
                     $add = false;
@@ -137,12 +131,21 @@ if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
         $add_schedule = fopen("./user_data/schedule_data.txt", 'a');
         fwrite($add_schedule, "\n" . $_SESSION["login_name"][0] . '$' . $today . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
         fclose($add_schedule);
-        // echo '新たに';
     }
     if (!empty($_POST['add_sche'])) {
         $login = 'make';
     }
 }
+
+
+$_sche_datas = file("./user_data/schedule_data.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+$re_data = fopen("./user_data/schedule_data.txt", 'w');
+foreach ($_sche_datas as $sche_data) {
+    fwrite($re_data, $sche_data . "\n");
+}
+fclose($re_data);
+
 
 
 if ($login === 'Yes') {
