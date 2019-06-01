@@ -268,6 +268,7 @@ if (!empty($_POST['make'])) {
                             <h4 class="new_pass">パスワード:<?php echo $_SESSION['pass'] ?></h4>
                         </div>
                         <input type="submit" class="log_new" name="new" value="新規登録">
+                        <input type="submit" class="log_new" name="return" value="戻る">
                     </div>
                 <?php endif ?>
                 <?php if (!empty($_POST['make'])): ?>
