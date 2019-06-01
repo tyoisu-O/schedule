@@ -1,4 +1,7 @@
 <?php
+ini_set( 'session.gc_maxlifetime', 24*60*60 );
+ini_set( 'session.gc_probability', 1 );
+ini_set( 'session.gc_divisor', 1 );
 session_start();
 
 if (!empty($_POST['log_out'])) { 
@@ -193,6 +196,10 @@ if ($login === 'Yes') {
 
 if (!empty($_POST['make'])) {
     $login  =  'make';
+}
+
+if (empty($_SESSION['login_name'])) {
+    $login = 'No';
 }
 
 
