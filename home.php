@@ -62,77 +62,83 @@ $today = date(Y).date(m).date(d);
 
 
 
-//erorr : スケジュールの途中で改行されてしまう
+
 if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
     $add = false;
     $new = true;
+    $make_sche = false;
+    if (!empty($_POST['sche_name']) && !empty($_POST['start_hour']) && !empty($_POST['start_minute']) && !empty($_POST['end_hour']) && !empty($_POST['end_minute'])) {
+        $make_sche = true;
 
-    $start_time = $_POST['start_hour'] . ':' . $_POST['start_minute'];
-    $end_time =  $_POST['end_hour'] . ':' . $_POST['end_minute'];
-    $sche_name = $_POST['sche_name'];
 
-    $user_sche_data = fopen("./user_data/schedule_data.txt", 'r');
-    while ($one_schedule = fgets($user_sche_data)) {
-        $user_schedule = explode('$', $one_schedule);
-        $user_number = $user_schedule[0];
-        $user_day_schedule = $user_schedule[1];
+        $start_time = $_POST['start_hour'] . ':' . $_POST['start_minute'];
+        $end_time =  $_POST['end_hour'] . ':' . $_POST['end_minute'];
+        $sche_name = $_POST['sche_name'];
 
-        if ($_SESSION['login_name'][0] === $user_number) {
-            $day_schedule = explode('/', $user_day_schedule);
-            $schedule_day = $day_schedule[0];
-            $schedule_start_time = $day_schedule[1];
-            $schedule_name = $day_schedule[2];
-            $schedule_end_time = $day_schedule[3];
+        $user_sche_data = fopen("./user_data/schedule_data.txt", 'r');
+        while ($one_schedule = fgets($user_sche_data)) {
+            $user_schedule = explode('$', $one_schedule);
+            $user_number = $user_schedule[0];
+            $user_day_schedule = $user_schedule[1];
 
-            if ($today === $schedule_day) {
-                $new = false;
-                fclose($user_sche_data);
+            if ($_SESSION['login_name'][0] === $user_number) {
+                $day_schedule = explode('/', $user_day_schedule);
+                $schedule_day = $day_schedule[0];
+                $schedule_start_time = $day_schedule[1];
+                $schedule_name = $day_schedule[2];
+                $schedule_end_time = $day_schedule[3];
 
-                $overwrite_data = fopen("./user_data/schedule_data.txt", 'r');
-                $schedules = [];
-                while ($schedules[] = fgets($overwrite_data)) {
-                }
-                // var_dump($schedules);
-                fclose($overwrite_data);
+                if ($today === $schedule_day) {
+                    $new = false;
+                    fclose($user_sche_data);
 
-                $overwrite_data = fopen("./user_data/schedule_data.txt", 'w');
-                foreach ($schedules as $schedule) {
-                    $_user_schedule = explode('$', $schedule);
-                    $_user_number = $_user_schedule[0];
-                    $_user_day_schedule = $_user_schedule[1];
+                    $overwrite_data = fopen("./user_data/schedule_data.txt", 'r');
+                    $schedules = [];
+                    while ($schedules[] = fgets($overwrite_data)) {
+                    }
+                    fclose($overwrite_data);
 
-                    if ($_SESSION['login_name'][0] === $_user_number) {
-                        $_day_schedule = explode('/', $_user_day_schedule);
-                        $_schedule_day = $_day_schedule[0];
+                    $overwrite_data = fopen("./user_data/schedule_data.txt", 'w');
+                    foreach ($schedules as $schedule) {
+                        $_user_schedule = explode('$', $schedule);
+                        $_user_number = $_user_schedule[0];
+                        $_user_day_schedule = $_user_schedule[1];
 
-                        if ($today === $_schedule_day) {
-                            //スケジュールの追加
-                            $schedule = rtrim($schedule);
-                            fwrite($overwrite_data, $schedule . '/' . $start_time . '/' . $sche_name . '/' . $end_time . "\n");
-                            $add = true;
+                        if ($_SESSION['login_name'][0] === $_user_number) {
+                            $_day_schedule = explode('/', $_user_day_schedule);
+                            $_schedule_day = $_day_schedule[0];
+
+                            if ($today === $_schedule_day) {
+                                //スケジュールの追加
+                                $schedule = rtrim($schedule);
+                                fwrite($overwrite_data, $schedule . '/' . $start_time . '/' . $sche_name . '/' . $end_time . "\n");
+                                $add = true;
+                            }
                         }
+                        if (!$add) {
+                            //スケジュールの再記入
+                            if ($schedule) { //このif文でなぜかできてしまうbool(false)を書かない
+                                fwrite($overwrite_data, $schedule);
+                            } 
+                        }
+                        $add = false;
                     }
-                    if (!$add) {
-                        //スケジュールの再記入
-                        if ($schedule) { //このif文でなぜかできてしまうbool(false)を書かない
-                            fwrite($overwrite_data, $schedule);
-                        } 
-                    }
-                    $add = false;
+                    fclose($overwrite_data);
+                    break;
                 }
-                fclose($overwrite_data);
-                break;
-            }
-        } 
-    }
-    if ($new) {
-        fclose($user_sche_data);
+            } 
+        }
+        if ($new) {
+            fclose($user_sche_data);
 
-        $add_schedule = fopen("./user_data/schedule_data.txt", 'a');
-        fwrite($add_schedule, "\n" . $_SESSION["login_name"][0] . '$' . $today . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
-        fclose($add_schedule);
-    }
-    if (!empty($_POST['add_sche'])) {
+            $add_schedule = fopen("./user_data/schedule_data.txt", 'a');
+            fwrite($add_schedule, "\n" . $_SESSION["login_name"][0] . '$' . $today . '/' . $start_time . '/' . $sche_name . '/' . $end_time);
+            fclose($add_schedule);
+        }
+        if (!empty($_POST['add_sche'])) {
+            $login = 'make';
+        }
+    } else {
         $login = 'make';
     }
 }
@@ -167,7 +173,7 @@ if ($login === 'Yes') {
 
     if($today_schedule){
         array_shift($today_schedule);
-    } else{
+    } else {
         $output = 'No Schedule';
     }
 
@@ -235,8 +241,11 @@ if (!empty($_POST['make'])) {
                     <?php endif ?>
                 <?php elseif($login === 'make'): ?>
                     <div class="sche_make">
-                        <input type="text" class="sche_name" name="sche_name" placeholder="スケジュールの名前">
-                        <div class="time_set">
+                        <?php if ($make_sche === false): ?>
+                            <h4>スケジュール情報が抜けている為、登録されませんでした。</h4>
+                        <?php endif ?>
+                            <input type="text" class="sche_name" name="sche_name" placeholder="スケジュールの名前">
+                            <div class="time_set">
                             <input type="text" class="start_hour" name="start_hour" placeholder="時">
                             <p>:</p>
                             <input type="text" class="start_minute" name="start_minute" placeholder="分">
@@ -248,8 +257,7 @@ if (!empty($_POST['make'])) {
                         <div class="sche_btns">
                             <input type="submit" class="add_sche" name="add_sche" value="次のスケジュール">
                             <input type="submit" class="decision" name="decision" value="確定">
-                        </div>
-                        
+                        </div>  
                     </div>
                 <?php elseif($login === 'No'): ?>
                     <div class="login">
