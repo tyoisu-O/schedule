@@ -175,8 +175,26 @@ main{
     display: inline-block;
 }
 
-.today{
+.day_time{
     text-align: center;
+    padding-top: 30px;
+    display: flex;
+    position: relative;
+}
+
+.day_time input{
+    display: block;
+    margin: auto;
+    border: none;
+    font-size: 23px;
+    background: #eddeca;
+    font-weight: bolder;
+}
+
+.today{
+    display: block;
+    margin: auto;
+    
 }
 
 .login{

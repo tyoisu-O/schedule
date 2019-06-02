@@ -231,7 +231,11 @@ if (empty($_SESSION['login_name'])) {
                 <?php endif ?>
             </nav>
             <main>
-                <h2 class="today">● <?php echo $day; ?> ●</h2>
+                <div class="day_time">
+                    <input type="submit" class="day_ago" mane="day_ago" value="昨日">
+                    <h2 class="today">● <?php echo $day; ?> ●</h2>
+                    <input type="submit" class="day_later" mane="day_later" value="明日">
+                </div>
                 <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
                     <?php foreach($output_schedules as $one_schedule): ?>
                         <div class="one_schedule">
