@@ -52,6 +52,16 @@ nav{
     border-color: #000;
 }
 
+.return_home{
+    position: absolute;
+    left: 0;
+    height: 23px;
+    width: 130px;
+    color: #ffffff;
+    background: #000000;
+    border-color: #000;
+}
+
 .log_out{
     position: absolute;
     right: 0;
@@ -177,7 +187,8 @@ main{
 
 .day_time{
     text-align: center;
-    padding-top: 30px;
+    padding-top: 20px;
+    padding-bottom: 10px;
     display: flex;
     position: relative;
 }

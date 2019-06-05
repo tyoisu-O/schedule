@@ -19,6 +19,7 @@ if (!empty($_POST['user_pass']) && !empty($_POST['user_name'])){
 
     $_SESSION['name'] = $_POST['user_name'];
     $_SESSION['pass'] = $_POST['user_pass'];
+    $_SESSION['master'] = false;
 
     $login = 'New';
     $pass_data = fopen("./user_data/user_pass.txt", 'r');
@@ -36,7 +37,7 @@ if (!empty($_POST['user_pass']) && !empty($_POST['user_name'])){
     fclose($pass_data);
 }
 
-
+// erorr : 新規登録できない
 if(!empty($_POST['new'])) {
     $pass_data = fopen("./user_data/user_pass.txt", 'r');
     $count = 1;
@@ -193,7 +194,9 @@ foreach ($_sche_datas as $sche_data) {
 }
 fclose($re_data);
 
-
+if ($user_info[0] === '2') {
+    $_SESSION['master'] = true;
+}
 
 if ($login === 'Yes') {
     $datas = fopen("./user_data/schedule_data.txt", 'r');
@@ -203,6 +206,14 @@ if ($login === 'Yes') {
         $schedule_datas = explode("/", $users_data[1]);
         //erorr : 新規でのログイン時,スケジュールが存在しても表示できない
         //解決 : 型が違った
+        if ($_SESSION['master']) { //閲覧用
+            if ($user_num === '0') {
+                if ($today === $schedule_datas[0]) {
+                    $today_schedule = $schedule_datas;
+                    break;
+                }
+            }
+        }
         if ($user_num === $user_info[0]) {
             if ($today === $schedule_datas[0]) {
                 $today_schedule = $schedule_datas;
@@ -236,9 +247,10 @@ if (!empty($_POST['make'])) {
     $login  =  'make';
 }
 
-if (empty($_SESSION['login_name'])) {
-    $login = 'No';
-}
+// erorr : このif文が新規登録できなくしている
+// if (empty($_SESSION['login_name'])) {
+//     $login = 'No';
+// }
 
 
 ?>
@@ -263,16 +275,31 @@ if (empty($_SESSION['login_name'])) {
                 <?php endif ?>
             </header>
             <nav>
-                <?php if ($login === 'Yes' ||  $login === 'make'): ?>
-                    <input type="submit" class="make" name="make" value="スケジュール作成">
-                    <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                <?php if(!$_SESSION['master']): ?>
+                    <?php if ($login === 'Yes'): ?>
+                        <input type="submit" class="make" name="make" value="スケジュール作成">
+                        <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                    <?php endif ?>
+                    <?php if ($login === 'make'): ?>
+                        <input type="submit" class="make" name="return_home" value="戻る">
+                        <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                    <?php endif ?>
+                <?php elseif ($_SESSION['master']): ?>
+                    <?php if ($login === 'Yes'): ?>
+                        <input type="submit" class="make" name="eturan" value="閲覧モード">
+                        <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                    <?php endif ?>
                 <?php endif ?>
             </nav>
             <main>
                 <div class="day_time">
-                    <input type="submit" class="day_ago" name="day_ago" value="&#9664;<?php echo $one_ago; ?>日">
+                    <?php if ($login === 'Yes'): ?>
+                        <input type="submit" class="day_ago" name="day_ago" value="&#9664;<?php echo $one_ago; ?>日">
+                    <?php endif ?>
                     <h2 class="today">● <?php echo $output_day; ?> ●</h2>
-                    <input type="submit" class="day_later" name="day_later" value="<?php echo $one_later; ?>日&#9654;">
+                    <?php if ($login === 'Yes'): ?>
+                        <input type="submit" class="day_later" name="day_later" value="<?php echo $one_later; ?>日&#9654;">
+                    <?php endif ?>
                 </div>
                 <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
                     <?php foreach($output_schedules as $one_schedule): ?>
@@ -285,7 +312,9 @@ if (empty($_SESSION['login_name'])) {
                     <?php if($output === 'No Schedule'): ?>
                         <div class="No_Schedule">
                             <h3>スケジュールが設定されていません</h3>
-                            <input type="submit" class="make2" name="make" value="スケジュール作成">
+                            <?php if(!$_SESSION['master']): ?>
+                                <input type="submit" class="make2" name="make" value="スケジュール作成">
+                            <?php endif ?>
                         </div>
                     <?php endif ?>
                 <?php elseif($login === 'make'): ?>
