@@ -6,6 +6,9 @@ session_start();
 
 if (!empty($_POST['log_out'])) { 
     unset($_SESSION['login_name']);
+    unset($_SESSION['day_move']);
+    unset($_SESSION['month_move']);
+    unset($_SESSION['year_move']);
 }
 
 
@@ -60,9 +63,44 @@ if (!empty($_SESSION['login_name'])) {
     $login = 'Yes';
 }
 
-$day = date(Y) . '年' . date(n) . '月' . date(j) . '日';
-$today = date(Y).date(m).date(d);
 
+// 年を跨ぐことができない(未実装)
+
+if (!$_SESSION['day_move']) {
+    $_SESSION['day_move'] =  date(d);
+    $_SESSION['month_move'] = date(m);
+    $_SESSION['year_move'] = date(Y);
+}
+
+if (!empty($_POST['day_ago'])) {
+    $_SESSION['day_move']--;
+} else if (!empty($_POST['day_later'])) {
+    $_SESSION['day_move']++;
+}
+
+if (($_SESSION['day_move']) > date('t', mktime(0, 0, 0, ($_SESSION['month_move'] + 1), 0, $_SESSION['year_move']))) { // 関数の仕様のため+1
+    $_SESSION['day_move'] = 1;
+    $_SESSION['month_move']++;
+} else if (($_SESSION['day_move']) <= 0) {
+    $_SESSION['day_move'] = date('t', mktime(0, 0, 0, ($_SESSION['month_move']), 0, $_SESSION['year_move'])); // 関数の仕様のため+なし
+    $_SESSION['month_move']--;
+}
+
+$year =  date(Y);
+$month = sprintf("%02s", $_SESSION['month_move']);
+$day = sprintf("%02s", $_SESSION['day_move']);
+
+$one_ago = abs($day) - 1;
+$one_later = abs($day) + 1;
+
+if ($one_ago <= 0) {
+    $one_ago = date('t', mktime(0, 0, 0, ($_SESSION['month_move']), 0, $_SESSION['year_move']));
+} else if ($one_later > date('t', mktime(0, 0, 0, ($_SESSION['month_move'] + 1), 0, $_SESSION['year_move']))) {
+    $one_later = 1;
+}
+
+$today = $year . $month . $day;
+$output_day = $year . '年' . abs($month) . '月' . abs($day) . '日';
 
 
 
@@ -232,9 +270,9 @@ if (empty($_SESSION['login_name'])) {
             </nav>
             <main>
                 <div class="day_time">
-                    <input type="submit" class="day_ago" mane="day_ago" value="昨日">
-                    <h2 class="today">● <?php echo $day; ?> ●</h2>
-                    <input type="submit" class="day_later" mane="day_later" value="明日">
+                    <input type="submit" class="day_ago" name="day_ago" value="&#9664;<?php echo $one_ago; ?>日">
+                    <h2 class="today">● <?php echo $output_day; ?> ●</h2>
+                    <input type="submit" class="day_later" name="day_later" value="<?php echo $one_later; ?>日&#9654;">
                 </div>
                 <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
                     <?php foreach($output_schedules as $one_schedule): ?>
