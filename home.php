@@ -323,7 +323,7 @@ if ($login === 'Yes') {
         $output_schedules[] = $one_schedule;
 
 
-        if (!empty($_POST["edit$edit_count"])) {
+        if (!empty($_POST["edit$edit_count"]) && !$_SESSION['master']) {
             $edit_one_schedule = [$edit_count, $time, $action, $end_time];
             $_SESSION['edit_contents'] = $edit_one_schedule;
             $login = 'Edit';
@@ -443,7 +443,7 @@ if (!empty($_POST['make'])) {
                             <h3 class="end">〜 <?php echo $_SESSION['edit_contents'][3]; ?></h3>
                         </div>
                         <div class="edit_submit">
-                            <input type="submit" class="edit_decision" name="edit_decision" value="変更">
+                            <input type="submit" class="edit_decision" name="edit_decision" value="変更(できない)">
                             <input type="submit" class="edit_delete" name="edit_delete" value="削除">
                         </div>
                     </div>
