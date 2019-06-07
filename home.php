@@ -1,4 +1,13 @@
 <?php
+// やることリスト
+// ・編集機能の追加
+// ・スマホ版の特殊文字対応
+// ・スマホ版のfont-size(改行対策)
+// ・スケジュール時間のcss
+// ・当日の主張css
+// ・スマホ版submitのcss対策
+// ・曜日の追加
+
 ini_set( 'session.gc_maxlifetime', 24*60*60 );
 ini_set( 'session.gc_probability', 1 );
 ini_set( 'session.gc_divisor', 1 );
@@ -9,6 +18,7 @@ if (!empty($_POST['log_out'])) {
     unset($_SESSION['day_move']);
     unset($_SESSION['month_move']);
     unset($_SESSION['year_move']);
+    unset($_SESSION['edit_contents']); // 仮
 }
 
 
@@ -37,10 +47,10 @@ if (!empty($_POST['user_pass']) && !empty($_POST['user_name'])){
     fclose($pass_data);
 }
 
-// erorr : 新規登録できない
+
 if(!empty($_POST['new'])) {
     $pass_data = fopen("./user_data/user_pass.txt", 'r');
-    $count = 1;
+    $count = 0;
     while($user_count = fgets($pass_data)){
         $count++;
     }
@@ -185,14 +195,84 @@ if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
     }
 }
 
+// スケジュール削除,編集 実装中(削除のみ完成)
+if (!empty($_POST['edit_decision']) || !empty($_POST['edit_delete'])) {
+    $user_sche_data = fopen("./user_data/schedule_data.txt", 'r');
+    while ($one_schedule = fgets($user_sche_data)) {
+        $user_schedule = explode('$', $one_schedule);
+        $user_number = $user_schedule[0];
+        $user_day_schedule = $user_schedule[1];
+
+        if ($_SESSION['login_name'][0] === $user_number) {
+            $day_schedule = explode('/', $user_day_schedule);
+            $schedule_day = $day_schedule[0];
+            // $schedule_start_time = $day_schedule[1];
+            // $schedule_name = $day_schedule[2];
+            // $schedule_end_time = $day_schedule[3];
+
+            if ($today === $schedule_day) {
+                fclose($user_sche_data);
+                $overwrite_data = fopen("./user_data/schedule_data.txt", 'r');
+                $schedules = [];
+                while ($schedules[] = fgets($overwrite_data)) {
+                }
+                fclose($overwrite_data);
+
+                $overwrite_data = fopen("./user_data/schedule_data.txt", 'w');
+                foreach ($schedules as $schedule) {
+                    $_user_schedule = explode('$', $schedule);
+                    $_user_number = $_user_schedule[0];
+                    $_user_day_schedule = $_user_schedule[1];
+
+                    if ($_SESSION['login_name'][0] === $_user_number) {
+                        $_day_schedule = explode('/', $_user_day_schedule);
+                        $_schedule_day = $_day_schedule[0];
+
+                        if ($today === $_schedule_day) {
+                            //削除
+                            $delete_num = $_SESSION['edit_contents'][0] * 3 + 1;
+                            for ($i = $delete_num; $i <= $delete_num + 2; $i++) {
+                                unset($_day_schedule[$i]);
+                            }
+                            if (count($_day_schedule) > 1) {
+                                $_day_schedule = array_values($_day_schedule);
+                                fwrite($overwrite_data, "\n" . $_SESSION["login_name"][0] . '$' . $_day_schedule[0]);
+                                unset($_day_schedule[0]);
+                                foreach ($_day_schedule as $all_schedule) {
+                                    fwrite($overwrite_data, '/' . $all_schedule);
+                                }
+                                fwrite($overwrite_data, "\n");
+                            }
+                            
+                            $add = true;
+                        }
+                    }
+                    if (!$add) {
+                        //スケジュールの再記入
+                        if ($schedule) { //このif文でなぜかできてしまうbool(false)を書かない
+                            fwrite($overwrite_data, $schedule);
+                        } 
+                    }
+                    $add = false;
+                }
+                fclose($overwrite_data);
+                break;
+            }
+        } 
+    }
+}
+
 
 $_sche_datas = file("./user_data/schedule_data.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
+$_sche_datas = array_values($_sche_datas);
 $re_data = fopen("./user_data/schedule_data.txt", 'w');
 foreach ($_sche_datas as $sche_data) {
     fwrite($re_data, $sche_data . "\n");
 }
 fclose($re_data);
+
+
 
 if ($user_info[0] === '2') {
     $_SESSION['master'] = true;
@@ -233,6 +313,7 @@ if ($login === 'Yes') {
 
 
     $output_schedules =[];
+    $edit_count = 0;
     for ($i = 1; $i <= $schedule_count; $i += 3){
         $time = $today_schedule[$i - 1];
         $action = $today_schedule[$i];
@@ -240,6 +321,14 @@ if ($login === 'Yes') {
         $one_schedule = [$time, $action, $end_time];
 
         $output_schedules[] = $one_schedule;
+
+
+        if (!empty($_POST["edit$edit_count"])) {
+            $edit_one_schedule = [$edit_count, $time, $action, $end_time];
+            $_SESSION['edit_contents'] = $edit_one_schedule;
+            $login = 'Edit';
+        }
+        $edit_count++;
     }
 }
 
@@ -251,6 +340,8 @@ if (!empty($_POST['make'])) {
 // if (empty($_SESSION['login_name'])) {
 //     $login = 'No';
 // }
+
+// echo $login;
 
 
 ?>
@@ -280,7 +371,7 @@ if (!empty($_POST['make'])) {
                         <input type="submit" class="make" name="make" value="スケジュール作成">
                         <input type="submit" class="log_out" name="log_out" value="ログアウト">
                     <?php endif ?>
-                    <?php if ($login === 'make'): ?>
+                    <?php if ($login === 'make' || $login === 'Edit'): ?>
                         <input type="submit" class="make" name="return_home" value="戻る">
                         <input type="submit" class="log_out" name="log_out" value="ログアウト">
                     <?php endif ?>
@@ -302,18 +393,24 @@ if (!empty($_POST['make'])) {
                     <?php endif ?>
                 </div>
                 <?php if ($login === 'Yes' && empty($_POST['make'])): ?>
-                    <?php foreach($output_schedules as $one_schedule): ?>
-                        <div class="one_schedule">
-                            <h3 class="first"><?php echo $one_schedule[0]; ?> 〜</h3>
-                            <p><?php echo $one_schedule[1]; ?></p>
-                            <h3 class="end">〜 <?php echo $one_schedule[2]; ?></h3>
+                    <?php foreach($output_schedules as $sche_key => $one_schedule): ?>
+                        <div class="sche_output">
+                            <div class="one_schedule">
+                                <h3 class="first"><?php echo $one_schedule[0]; ?> 〜</h3>
+                                <p><?php echo $one_schedule[1]; ?></p>
+                                <h3 class="end">〜 <?php echo $one_schedule[2]; ?></h3>
+                            </div>
+                            <div class="edit">
+                                <input type="submit" name="edit<?php echo $sche_key; ?>" class="edit_submit" value="編集">
+                            </div>
                         </div>
+                        
                     <?php endforeach ?>
                     <?php if($output === 'No Schedule'): ?>
                         <div class="No_Schedule">
                             <h3>スケジュールが設定されていません</h3>
                             <?php if(!$_SESSION['master']): ?>
-                                <input type="submit" class="make2" name="make" value="スケジュール作成">
+                                <input type="submit" class="make_submit" name="make" value="スケジュール作成">
                             <?php endif ?>
                         </div>
                     <?php endif ?>
@@ -336,6 +433,19 @@ if (!empty($_POST['make'])) {
                             <input type="submit" class="add_sche" name="add_sche" value="次のスケジュール">
                             <input type="submit" class="decision" name="decision" value="確定">
                         </div>  
+                    </div>
+                <?php elseif($login === 'Edit'): ?>
+                    <div class="edit_home">
+                        <h3 class="edit_title">編集モード</h3>
+                        <div class="edit_one_schedule">
+                            <h3 class="first"><?php echo $_SESSION['edit_contents'][1]; ?> 〜</h3>
+                            <p><?php echo $_SESSION['edit_contents'][2]; ?></p>
+                            <h3 class="end">〜 <?php echo $_SESSION['edit_contents'][3]; ?></h3>
+                        </div>
+                        <div class="edit_submit">
+                            <input type="submit" class="edit_decision" name="edit_decision" value="変更">
+                            <input type="submit" class="edit_delete" name="edit_delete" value="削除">
+                        </div>
                     </div>
                 <?php elseif($login === 'No'): ?>
                     <div class="login">
