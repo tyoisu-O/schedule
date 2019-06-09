@@ -110,8 +110,12 @@ if ($one_ago <= 0) {
     $one_later = 1;
 }
 
+$week = ['日', '月', '火', '水', '木', '金', '土'];
+$timestamp = mktime(0, 0, 0, $month, $day, $year);
+$today_week = $week[date(w, $timestamp)];
+
 $today = $year . $month . $day;
-$output_day = $year . '年' . abs($month) . '月' . abs($day) . '日';
+$output_day = $year . '年' . abs($month) . '月' . abs($day) . '日(' . $today_week . ')';
 
 
 
@@ -196,7 +200,7 @@ if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
 }
 
 // スケジュール削除,編集 実装中(削除のみ完成)
-if (!empty($_POST['edit_decision']) || !empty($_POST['edit_delete'])) {
+if (!empty($_POST['edit_delete'])) {
     $user_sche_data = fopen("./user_data/schedule_data.txt", 'r');
     while ($one_schedule = fgets($user_sche_data)) {
         $user_schedule = explode('$', $one_schedule);
@@ -401,7 +405,7 @@ if (!empty($_POST['make'])) {
                                 <h3 class="end">〜 <?php echo $one_schedule[2]; ?></h3>
                             </div>
                             <div class="edit">
-                                <input type="submit" name="edit<?php echo $sche_key; ?>" class="edit_submit" value="編集">
+                                <input type="submit" name="edit<?php echo $sche_key; ?>" value="編集">
                             </div>
                         </div>
                         
