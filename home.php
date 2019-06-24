@@ -3,15 +3,14 @@
 // ・編集機能の追加
 // ・スマホ版の特殊文字対応
 // ・スマホ版のfont-size(改行対策)
-// ・スケジュール時間のcss
 // ・当日の主張css
-// ・スマホ版submitのcss対策
-// ・曜日の追加
+// ・int(0)を入力するとエラーがでる問題対策
 
 ini_set( 'session.gc_maxlifetime', 24*60*60 );
 ini_set( 'session.gc_probability', 1 );
 ini_set( 'session.gc_divisor', 1 );
 session_start();
+
 
 if (!empty($_POST['log_out'])) { 
     unset($_SESSION['login_name']);
@@ -74,6 +73,7 @@ if (!empty($_SESSION['login_name'])) {
     $login = 'Yes';
 }
 
+$natural_time =  date(Y) . sprintf("%02s", date(m)) . sprintf("%02s", date(d));
 
 // 年を跨ぐことができない(未実装)
 
@@ -117,6 +117,11 @@ $today_week = $week[date(w, $timestamp)];
 $today = $year . $month . $day;
 $output_day = $year . '年' . abs($month) . '月' . abs($day) . '日(' . $today_week . ')';
 
+$day_color = false;
+if ($natural_time === $today) {
+    $day_color = true;
+}
+
 
 
 if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
@@ -125,7 +130,6 @@ if (!empty($_POST['decision']) || !empty($_POST['add_sche'])) {
     $make_sche = false;
     if (!empty($_POST['sche_name']) && !empty($_POST['start_hour']) && !empty($_POST['start_minute']) && !empty($_POST['end_hour']) && !empty($_POST['end_minute'])) {
         $make_sche = true;
-
 
         $start_time = $_POST['start_hour'] . ':' . $_POST['start_minute'];
         $end_time =  $_POST['end_hour'] . ':' . $_POST['end_minute'];
