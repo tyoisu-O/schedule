@@ -46,30 +46,40 @@ nav{
 }
 
 .make{
-    position: absolute;
     left: 0;
     height: 23px;
     width: 130px;
+    margin-left: 1px;
+    color: #ffffff;
+    background: #000000;
+    border-color: #000;
+}
+
+.todo{
+    height: 23px;
+    width: 130px;
+    margin-left: 1px;
     color: #ffffff;
     background: #000000;
     border-color: #000;
 }
 
 .return_home{
-    position: absolute;
     left: 0;
     height: 23px;
     width: 130px;
+    margin-left: 1px;
     color: #ffffff;
     background: #000000;
-    border-color: #000;
+    border-color: rgb(0, 0, 0);
 }
 
 .log_out{
     position: absolute;
     right: 0;
     height: 23px;
-    width: 95px;
+    width: 100px;
+    margin-right: 1px;
     color: #ffffff;
     background: #000000;
     border-color: #000;
@@ -79,6 +89,14 @@ main{
     padding: 20px 10px;
     background-color: #f8e8d3;
     flex: 1;
+}
+
+.fix_message{
+    text-align: center;
+}
+
+.fix_message p{
+    color: blue;
 }
 
 .sche_output{
@@ -363,6 +381,77 @@ main{
 
 .login .form_textbox{
     padding: 30px 0;
+}
+
+.todo_main{
+    text-align: center;
+}
+
+.todo_name{
+    display: inline-block;
+    width: 70%;
+    font: 20px/24px sans-serif;
+	box-sizing: border-box;
+    padding: 17px;
+	transition: 0.3s;
+	letter-spacing: 1px;
+	color: #000;
+	border: 1px solid #1b2538;
+	border-radius: 4px;
+}
+
+.todo_decision{
+    display: inline-block;
+    font: 15px/24px sans-serif;
+    width: 20%;
+	box-sizing: border-box;
+	padding: 20px 5px;
+	transition: 0.3s;
+    letter-spacing: 1px;
+    background-color: #000;
+    color: rgb(255, 255, 255);
+    margin-top: 20px;
+}
+
+.output_todo{
+    padding-top: 30px;
+}
+
+.one_todo{
+    width: 90%;
+    margin: 10px 1.5% 0px 7%;
+    padding: 5px 15px;
+    display: flex;
+}
+
+.output_todo_name{
+    display: block;
+    left: 0;
+    background-color: #e4c8c8a4;
+    width: 70%;
+    padding: 15px;
+}
+
+.output_todo_name p{
+    font-size: 23px;
+}
+
+.todo_clear_btn{
+    display: inline-block;
+    right: 0;
+    width: 15%;
+    background-color: #e6b9b9a4;
+    
+}
+
+.todo_clear_btn input{
+    border: none;
+    font-size: 15px;
+    text-align: center;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: #e6b9b9a4;
 }
 
 footer{

@@ -1,10 +1,11 @@
 <?php
 // やることリスト
-// ・編集機能の追加
+// ・編集機能の追加(変更)
 // ・スマホ版の特殊文字対応
 // ・スマホ版のfont-size(改行対策)
 // ・当日の主張css
 // ・int(0)を入力するとエラーがでる問題対策
+// ・ToDoリストシステムの作成
 
 ini_set( 'session.gc_maxlifetime', 24*60*60 );
 ini_set( 'session.gc_probability', 1 );
@@ -20,6 +21,7 @@ if (!empty($_POST['log_out'])) {
     unset($_SESSION['edit_contents']); // 仮
 }
 
+$fix = true; //手動でboolean
 
 $login = 'No';
 $output = '';
@@ -271,6 +273,49 @@ if (!empty($_POST['edit_delete'])) {
 }
 
 
+// todoリストの作成処理
+if (!empty($_POST["todo_box"]) && !empty($_POST["todo_btn"])) {
+    $user_todo_datas = fopen("./user_data/user_todo.txt", 'r');
+    $user_todo_redatas = [];
+    $todo_add = false;
+    while ($one_user_todo = fgets($user_todo_datas)) {
+        $one_user_todo = rtrim($one_user_todo, '/');
+        $user_todo_data = explode('/', $one_user_todo);
+        $user_id = $user_todo_data[0];
+        array_pop($user_todo_data);
+
+        if ($user_id === $_SESSION['login_name'][0]) {
+            array_push($user_todo_data, $_POST["todo_box"]);
+            $todo_add = true;
+
+        }
+
+        $user_todo_redatas[] = $user_todo_data;
+
+    }
+    if (!$todo_add) {
+        $new_todo_user = [];
+        $new_todo_user[] = $_SESSION['login_name'][0];
+        $new_todo_user[] = $_POST["todo_box"];
+
+        $user_todo_redatas[] = $new_todo_user;
+    }
+
+    $user_todo_redatas = str_replace(array("\r\n","\r","\n"), '', $user_todo_redatas);
+
+    $user_todo_datas = fopen("./user_data/user_todo.txt", 'w');
+    // var_dump($user_todo_redatas);
+    foreach ($user_todo_redatas as $user_todo_data) {
+        foreach ($user_todo_data as $one_todo) {
+            fwrite($user_todo_datas, $one_todo . '/');
+        }
+        fwrite($user_todo_datas, "\n");
+    }
+
+    $login = 'todo';
+}
+
+
 $_sche_datas = file("./user_data/schedule_data.txt", FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 $_sche_datas = array_values($_sche_datas);
@@ -344,6 +389,29 @@ if (!empty($_POST['make'])) {
     $login  =  'make';
 }
 
+if (!empty($_POST['todo'])) {
+    $login  =  'todo';
+}
+
+
+if ($login === 'todo') {
+    $users_todo = false;
+    $user_todo_datas = fopen("./user_data/user_todo.txt", 'r');
+    while ($one_user_todo = fgets($user_todo_datas)) {
+        $one_user_todo = rtrim($one_user_todo, '/');
+        $user_todo_data = explode('/', $one_user_todo);
+        $user_id = $user_todo_data[0];
+        array_pop($user_todo_data);
+
+        if ($user_id === $_SESSION['login_name'][0]) {
+            $user_todo_output = $user_todo_data;
+            array_shift($user_todo_output);
+            $users_todo = true;
+        }
+    }
+}
+
+
 // erorr : このif文が新規登録できなくしている
 // if (empty($_SESSION['login_name'])) {
 //     $login = 'No';
@@ -377,10 +445,16 @@ if (!empty($_POST['make'])) {
                 <?php if(!$_SESSION['master']): ?>
                     <?php if ($login === 'Yes'): ?>
                         <input type="submit" class="make" name="make" value="スケジュール作成">
+                        <input type="submit" class="todo" name="todo" value="To Do リスト">
                         <input type="submit" class="log_out" name="log_out" value="ログアウト">
                     <?php endif ?>
                     <?php if ($login === 'make' || $login === 'Edit'): ?>
                         <input type="submit" class="make" name="return_home" value="戻る">
+                        <input type="submit" class="log_out" name="log_out" value="ログアウト">
+                    <?php endif ?>
+                    <?php if ($login === 'todo'): ?>
+                        <input type="submit" class="make" name="return_home" value="ホーム">
+                        <input type="submit" class="make" name="make" value="スケジュール作成">
                         <input type="submit" class="log_out" name="log_out" value="ログアウト">
                     <?php endif ?>
                 <?php elseif ($_SESSION['master']): ?>
@@ -391,6 +465,11 @@ if (!empty($_POST['make'])) {
                 <?php endif ?>
             </nav>
             <main>
+                <div class="fix_message">
+                    <?php if ($fix): ?>
+                        <p>只今、アップデート中のためエラーがでる可能性があります。</p>
+                    <?php endif ?>
+                </div>
                 <div class="day_time">
                     <?php if ($login === 'Yes'): ?>
                         <input type="submit" class="day_ago" name="day_ago" value="&#9664;<?php echo $one_ago; ?>日">
@@ -453,6 +532,29 @@ if (!empty($_POST['make'])) {
                         <div class="edit_submit">
                             <input type="submit" class="edit_decision" name="edit_decision" value="変更(できない)">
                             <input type="submit" class="edit_delete" name="edit_delete" value="削除">
+                        </div>
+                    </div>
+
+                <?php elseif ($login === 'todo'): ?>
+                    <div class="todo_main">
+                        <h2>ToDoリスト</h2>
+                        <div class="make_todo">
+                            <input type="text" class="todo_name" name="todo_box">
+                            <input type="submit" class="todo_decision" name="todo_btn" value="追加">
+                        </div>
+                        <div class="output_todo">
+                            <?php if ($users_todo): ?>
+                                <?php foreach ($user_todo_output as $output_todo): ?>
+                                    <div class="one_todo">
+                                        <div class="output_todo_name">
+                                            <p><?php echo $output_todo; ?></p>
+                                        </div>
+                                        <div class="todo_clear_btn">
+                                            <input type="submit" name="todo_clear" value="完了">
+                                        </div>
+                                    </div>
+                                <?php endforeach ?>
+                            <?php endif ?>
                         </div>
                     </div>
                 <?php elseif($login === 'No'): ?>
