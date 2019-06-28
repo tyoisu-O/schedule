@@ -418,8 +418,8 @@ main{
 }
 
 .one_todo{
-    width: 90%;
-    margin: 10px 1.5% 0px 7%;
+    width: 95%;
+    margin: 10px 1.5% 0px 9%;
     padding: 5px 15px;
     display: flex;
 }
@@ -428,8 +428,8 @@ main{
     display: block;
     left: 0;
     background-color: #e4c8c8a4;
-    width: 70%;
-    padding: 15px;
+    width: 65%;
+    padding: 15px 5px;
 }
 
 .output_todo_name p{

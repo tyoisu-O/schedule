@@ -21,7 +21,7 @@ if (!empty($_POST['log_out'])) {
     unset($_SESSION['edit_contents']); // 仮
 }
 
-$fix = true; //手動でboolean
+$fix = false; //手動でboolean
 
 $login = 'No';
 $output = '';
@@ -115,8 +115,10 @@ if ($one_ago <= 0) {
 $week = ['日', '月', '火', '水', '木', '金', '土'];
 $timestamp = mktime(0, 0, 0, $month, $day, $year);
 $today_week = $week[date(w, $timestamp)];
+$today_youbi = $week[date('w')];
 
 $today = $year . $month . $day;
+$output_today = $year . '年' . abs(date(m)) . '月' . abs(date(d)) . '日(' . $today_youbi . ')';
 $output_day = $year . '年' . abs($month) . '月' . abs($day) . '日(' . $today_week . ')';
 
 $day_color = false;
@@ -261,16 +263,53 @@ if (!empty($_POST['edit_delete'])) {
                         //スケジュールの再記入
                         if ($schedule) { //このif文でなぜかできてしまうbool(false)を書かない
                             fwrite($overwrite_data, $schedule);
-                        } 
+                        }
                     }
                     $add = false;
                 }
                 fclose($overwrite_data);
                 break;
             }
-        } 
+        }
     }
 }
+
+// todo完了
+for ($i = 0; $i <= 30; $i++) {
+   if (!empty($_POST["todo_clear_$i"])) {
+        $fin_todo_num = $i;
+
+        $user_todo_datas = fopen("./user_data/user_todo.txt", 'r');
+        $user_todo_redatas = [];
+        while ($one_user_todo = fgets($user_todo_datas)) {
+            $one_user_todo = rtrim($one_user_todo, '/');
+            $user_todo_data = explode('/', $one_user_todo);
+            $user_id = $user_todo_data[0];
+            array_pop($user_todo_data);
+
+            if ($user_id === $_SESSION['login_name'][0]) {
+                unset($user_todo_data[$fin_todo_num + 1]);
+            }
+            $user_todo_redatas[] = $user_todo_data;
+        }
+
+
+        $user_todo_redatas = str_replace(array("\r\n","\r","\n"), '', $user_todo_redatas);
+
+        $user_todo_datas = fopen("./user_data/user_todo.txt", 'w');
+        foreach ($user_todo_redatas as $user_todo_data) {
+            foreach ($user_todo_data as $one_todo) {
+                fwrite($user_todo_datas, $one_todo . '/');
+            }
+            fwrite($user_todo_datas, "\n");
+        }
+
+        $login = 'todo';
+        
+    }
+}
+
+
 
 
 // todoリストの作成処理
@@ -474,7 +513,11 @@ if ($login === 'todo') {
                     <?php if ($login === 'Yes'): ?>
                         <input type="submit" class="day_ago" name="day_ago" value="&#9664;<?php echo $one_ago; ?>日">
                     <?php endif ?>
-                    <h2 class="today">● <?php echo $output_day; ?> ●</h2>
+                    <?php if ($login === 'todo'): ?>
+                        <h2 class="today">● <?php echo $output_today; ?> ●</h2>
+                    <?php else: ?>
+                        <h2 class="today">● <?php echo $output_day; ?> ●</h2>
+                    <?php endif ?>
                     <?php if ($login === 'Yes'): ?>
                         <input type="submit" class="day_later" name="day_later" value="<?php echo $one_later; ?>日&#9654;">
                     <?php endif ?>
@@ -544,20 +587,20 @@ if ($login === 'todo') {
                         </div>
                         <div class="output_todo">
                             <?php if ($users_todo): ?>
-                                <?php foreach ($user_todo_output as $output_todo): ?>
+                                <?php foreach ($user_todo_output as $key => $output_todo): ?>
                                     <div class="one_todo">
                                         <div class="output_todo_name">
                                             <p><?php echo $output_todo; ?></p>
                                         </div>
                                         <div class="todo_clear_btn">
-                                            <input type="submit" name="todo_clear" value="完了">
+                                            <input type="submit" name="todo_clear_<?php echo $key; ?>" value="完了">
                                         </div>
                                     </div>
                                 <?php endforeach ?>
                             <?php endif ?>
                         </div>
                     </div>
-                <?php elseif($login === 'No'): ?>
+                <?php elseif ($login === 'No'): ?>
                     <div class="login">
                         <h3>ログイン&新規登録</h3>
                         <div class="form_textbox">
@@ -566,7 +609,7 @@ if ($login === 'todo') {
                         </div>
                         <input type="submit" class="log_new" name="log" value="I N">
                     </div>
-                <?php elseif($login === 'New'): ?>
+                <?php elseif ($login === 'New'): ?>
                     <div class="login">
                         <h3>ログイン&新規登録</h3>
                         <div class="new_user_info">
